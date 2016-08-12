@@ -1,0 +1,231 @@
+
+<html>
+<head>
+
+<title>Calendar</title>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<style>
+button{
+	padding: 10;
+	border: none;
+	background: none;
+	width:100%;
+	outline:none;
+}
+
+th,tr,h3{
+	text-align:center;
+	}
+	
+h1{
+	font-size:100px;
+	text-align:center;
+}
+
+.row{
+	width:50%;
+	border: 2px solid black;
+	text-align=center;
+}
+</style>
+
+<script type="text/javascript">
+
+	var date = new Date();
+	
+	
+	
+	// these are labels for the days of the week
+	cal_days_labels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+	
+	days_Full= ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+
+	// these are human-readable month name labels, in order
+	cal_months_labels = ['January', 'February', 'March', 'April',
+						 'May', 'June', 'July', 'August', 'September',
+						 'October', 'November', 'December'];
+
+	// these are the days of the week for each month, in order
+	cal_days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+	// this is the current date
+	cal_current_date = new Date(); 
+
+	function Calendar(month, year) {
+	  this.month = (isNaN(month) || month == null) ? cal_current_date.getMonth() : month;
+	  this.year  = (isNaN(year) || year == null) ? cal_current_date.getFullYear() : year;
+	  this.html = '';
+	}
+	
+		
+	var curMonth;
+	var curYear;
+	
+	Calendar.prototype.generateHTML = function(){
+	
+		curMonth = this.month;
+		curYear = this.year;
+
+	  // get first day of month
+	  var firstDay = new Date(this.year, this.month, 1);
+	  var startingDay = firstDay.getDay();
+	  
+	  // find number of days in month
+	  var monthLength = cal_days_in_month[this.month];
+	  
+	  // compensate for leap year
+	  if (this.month == 1) { // February only!
+		if((this.year % 4 == 0 && this.year % 100 != 0) || this.year % 400 == 0){
+		  monthLength = 29;
+		}
+	  }
+	  
+	  // do the header
+	  var monthName = cal_months_labels[this.month]
+	  var html = '<table class="calendar-table">';
+	  html += '<tr><th id="Month" colspan="7"><button style="width:10%;padding-right:60px" onclick="Left()"><</button>';
+	  html +=  monthName + " " + this.year;
+	  html += '<button style="width:10%; padding-left:60px" onclick="Right()">></button></th></tr>';
+	  html += '<tr class="calendar-header">';
+	  for(var i = 0; i <= 6; i++ ){
+		html += '<td class="calendar-header-day">';
+		html += cal_days_labels[i];
+		html += '</td>';
+	  }
+	  html += '</tr><tr>';
+
+	  // fill in the days
+	  var day=1;	  
+	  // this loop is for is weeks (rows)
+	  for (var i = 0; i < 9; i++) {
+		// this loop is for weekdays (cells)
+		for (var j = 0; j <= 6; j++) { 
+		  html += "<td class='calendar-day'><button class='Cell' id='d"+ day.toString() +"' onclick='document.getElementById(" + '"dayNum"' + ").innerHTML=" + '"' + day + '"' + "; document.getElementById(" + '"dayStr"' + ").innerHTML=" + '"' + days_Full[j] + '"' + ";Color();Selected(this)'>";
+		  if (day <= monthLength && (i > 0 || j >= startingDay)) {
+		  document.getElementById("dayNum").innerHTML=date.getDate(); 
+		  document.getElementById("dayStr").innerHTML=days_Full[date.getDay()];
+			html += day;
+			day++;
+		  }
+		  html += '</button></td>';
+		}
+		// stop making rows if we've run out of days
+		if (day > monthLength) {
+		  break;
+		} else {
+		  html += '</tr><tr>';
+		}
+	  }
+	  html += '</tr></table>';
+
+	  this.html = html;
+	}
+		
+		var mCount=0;
+		var yCount=0;
+		var tYear;
+		
+window.addEventListener("keydown", checkKeyPressed, false);
+ 
+function checkKeyPressed(e) {
+	mCount=curMonth;
+    if (e.keyCode == "39") {
+        if(mCount>10){
+			mCount=-1;
+			curMonth=0;
+			tYear=parseFloat(1+curYear)
+		}
+		mCount+=1;
+		//console.log(mCount);
+		var cal = new Calendar(mCount,tYear);
+		cal.generateHTML();
+		document.getElementById('Cal').innerHTML =cal.getHTML();
+    }
+	if (e.keyCode == "37") {
+        if(mCount<1){
+			mCount=12;
+			curMonth=0;
+			tYear=parseFloat(curYear-1)
+		}
+		mCount-=1;
+		//console.log(mCount);
+		var cal = new Calendar(mCount,tYear);
+		cal.generateHTML();
+		document.getElementById('Cal').innerHTML =cal.getHTML();
+    }
+}
+
+function Left(){
+    if(mCount<1){
+		mCount=12;
+		curMonth=0;
+		tYear=parseFloat(curYear-1)
+	}
+	mCount-=1;
+	//console.log(mCount);
+	var cal = new Calendar(mCount,tYear);
+	cal.generateHTML();
+	document.getElementById('Cal').innerHTML =cal.getHTML();
+}
+
+function Right(){
+mCount=curMonth;
+    if(mCount>10){
+		mCount=-1;
+		curMonth=0;
+		tYear=parseFloat(1+curYear)
+	}
+	mCount+=1;
+	//console.log(mCount);
+	var cal = new Calendar(mCount,tYear);
+	cal.generateHTML();
+	document.getElementById('Cal').innerHTML =cal.getHTML();
+}
+	
+	function Selected(tdObj){
+		tdObj.style.backgroundColor="red";
+		tdObj.style.color="White";
+		//console.log(tdObj.id);
+	}
+	
+	function Color() {
+		var x = document.getElementsByClassName("Cell");
+		for (i = 0; i < x.length; i++) { 
+			x[i].style.backgroundColor = "White";
+			x[i].style.color = "black";
+		}
+	}
+
+	Calendar.prototype.getHTML = function() {
+	  return this.html;
+	}
+
+</script>
+
+</head>
+
+<body>
+<center><div class="container">
+	<div class="row">
+		<div class="col-sm-6">
+			<h3 id="dayStr">Monday<h3>
+			<h1 id="dayNum">10<h1>
+		</div>
+		<div id="Cal" class="col-sm-6"></div>
+	</div>
+</div></center>
+
+
+<script type="text/javascript">
+  var cal = new Calendar();
+  var date = new Date();
+  cal.generateHTML();
+  document.getElementById('Cal').innerHTML =cal.getHTML();
+  document.getElementById("d"+date.getDate()).style.backgroundColor="red";
+  document.getElementById("d"+date.getDate()).style.color="White";
+</script>
+
+
+</body></html>
