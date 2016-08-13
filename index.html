@@ -33,9 +33,6 @@ h1{
 
 <script type="text/javascript">
 
-	var date = new Date();
-	
-	
 	
 	// these are labels for the days of the week
 	cal_days_labels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -104,8 +101,8 @@ h1{
 		for (var j = 0; j <= 6; j++) { 
 		  html += "<td class='calendar-day'><button class='Cell' id='d"+ day.toString() +"' onclick='document.getElementById(" + '"dayNum"' + ").innerHTML=" + '"' + day + '"' + "; document.getElementById(" + '"dayStr"' + ").innerHTML=" + '"' + days_Full[j] + '"' + ";Color();Selected(this)'>";
 		  if (day <= monthLength && (i > 0 || j >= startingDay)) {
-		  document.getElementById("dayNum").innerHTML=date.getDate(); 
-		  document.getElementById("dayStr").innerHTML=days_Full[date.getDay()];
+		  document.getElementById("dayNum").innerHTML=	cal_current_date.getDate(); 
+		  document.getElementById("dayStr").innerHTML=days_Full[cal_current_date.getDay()];
 			html += day;
 			day++;
 		  }
